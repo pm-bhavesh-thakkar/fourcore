@@ -25,7 +25,7 @@ page.onLoadFinished = function(status) {
 
             page.evaluate(function() {
 
-                $.fn.isOnScreen = function(x, y, currentObject) {
+                $.fn.isOnScreen = function(x, y, boundrect) {
 
                     if (x == null || typeof x == 'undefined') x = 1;
                     if (y == null || typeof y == 'undefined') y = 1;
@@ -34,54 +34,57 @@ page.onLoadFinished = function(status) {
 
                     var viewport = {
                         top: win.scrollTop(),
-                        left: win.scrollLeft()
+                        left: win.scrollLeft(),
+                        right: win.width(),
+                        bottom: win.height()
                     };
 
-
+                    console.log("viewport bounds :" + JSON.stringify(viewport));
 
                     viewport.right = viewport.left + win.width();
                     viewport.bottom = viewport.top + win.height();
-                    console.log("Printing this object");
-                    console.log($(this));
-                    //var currentObject = this;
-                    var boundrect = currentObject.getBoundingClientRect();
 
-                    //console.log("element.top " + bounds.top);
-                    //console.log("element.left " + bounds.left);
-                    //console.log("element.right " + bounds.right);
-                    //console.log("element.bottom " + bounds.bottom);
-                    console.log("####################################################################################################");
+                    var height = boundrect.height;
+                    var width = boundrect.width;
+
+                    console.log("Element bounds :" + JSON.stringify(boundrect));
+
+                    if (!width || !height) {
+                        return false;
+                    }
+
 
                     var visible = (!(viewport.right < boundrect.left || viewport.left > boundrect.right || viewport.bottom < boundrect.top || viewport.top > boundrect.bottom));
 
                     if (!visible) {
                         return false;
                     }
-		    
-                    var win = $(window);
-                    var deltas = {
-                        top: Math.min(1, (boundrect.bottom - viewport.top) / win.height()),
-                        bottom: Math.min(1, (viewport.bottom - boundrect.top) / win.height()),
-                        left: Math.min(1, (boundrect.right - viewport.left) / win.width()),
-                        right: Math.min(1, (viewport.right - boundrect.left) / win.width())
-                    };
 
+                    var deltas = {
+                        top: Math.min(1, (boundrect.bottom - viewport.top) / height),
+                        bottom: Math.min(1, (viewport.bottom - boundrect.top) / height),
+                        left: Math.min(1, (boundrect.right - viewport.left) / width),
+                        right: Math.min(1, (viewport.right - boundrect.left) / width)
+                    };
+                    console.log("x  :" + deltas.left * deltas.right);
+                    console.log("y  :" + deltas.top * deltas.bottom);
                     return (deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y;
 
                 };
             });
-
-            //Starts Here
             page.evaluate(function() {
                 console.log("Hello");
-                $("iframe[id*='ads']").contents().find("span.PubAdAI").each(function(){
-                    console.log("Hi");
-                    console.log($(this).isOnScreen(0.5, 0.5, this));
-                });
-                //$("iframe[id*='ads']").each(function() {
-                //    console.log("Hi");
-                //    console.log($(this).isOnScreen(0.5, 0.5, this));
+                // $("iframe[id*='ads']").contents().find("span.PubAdAI").each(function(){
+                //console.log("Hi");
+                //console.log($(this).isOnScreen(0.5,0.5,this.getBoundingClientRect()));
                 //});
+                $("iframe[id*='ads']").each(function() {
+
+                    //if ($(this).contents().find("span.PubAdAI")
+                    console.log("Element zIndex is  " + this.getAttribute("zIndex"));
+                    console.log("Element Viewability is : " + $(this).isOnScreen(0.5, 0.5, this.getBoundingClientRect()));
+                    console.log("--------------------------------------------------------------------");
+                });
             });
 
 

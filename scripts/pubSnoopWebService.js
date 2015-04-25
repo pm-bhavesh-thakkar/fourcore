@@ -71,12 +71,15 @@ server.listen(port, function(request, response) {
 
                                         var height = boundrect.height;
                                         var width = boundrect.width;
+					
                                         var response1 = {
                                             viewportBounds: viewport,
                                             elementBounds: boundrect,
                                             isVisibleOnLoad: false
 
                                         };
+					var adTagID=boundrect.top+"_"+boundrect.right+"_"+boundrect.bottom+"_"+boundrect.left;
+					response1.adTagID=adTagID;
                                         //console.log("Element bounds :" +JSON.stringify(boundrect));
 
                                         if (!width || !height) {
@@ -152,7 +155,7 @@ server.listen(port, function(request, response) {
                             quality: '50'
                         });
                         var image = {};
-                        image.url = "http://localhost/" + milliseconds + '.jpeg';
+                        image.url = "http://172.16.4.37/" + milliseconds + '.jpeg';
                         var finalResponse = [];
                         finalResponse.push(image);
                         finalResponse.push(responseArr);

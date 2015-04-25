@@ -39,70 +39,95 @@ server.listen(port, function(request, response) {
             };
             var responseArr = [];
             page.settings.localToRemoteUrlAccessEnabled = true;
-	    page.viewportSize = { width: 1024, height: 768 };	
+            page.viewportSize = {
+                width: 1024,
+                height: 768
+            };
             page.onLoadFinished = function(status) {
 
                 window.setTimeout(function() {
-                    try {
+                        try {
 
-                        page.evaluate(function() {
+                            page.evaluate(function() {
 
-                            $.fn.isOnScreen = function(x, y, boundrect) {
+                                    $.fn.isOnScreen = function(x, y, boundrect) {
 
-                                if (x == null || typeof x == 'undefined') x = 1;
-                                if (y == null || typeof y == 'undefined') y = 1;
+                                        if (x == null || typeof x == 'undefined') x = 1;
+                                        if (y == null || typeof y == 'undefined') y = 1;
 
-                                var win = $(window);
+                                        var win = $(window);
 
-                                var viewport = {
-                                    top: win.scrollTop(),
-                                    left: win.scrollLeft(),
-                                    right: win.width(),
-                                    bottom: win.height()
+                                        var viewport = {
+                                            top: win.scrollTop(),
+                                            left: win.scrollLeft(),
+                                            right: win.width(),
+                                            bottom: win.height()
+                                        };
+
+                                        //console.log("viewport bounds :" +JSON.stringify(viewport));
+
+                                        viewport.right = viewport.left + win.width();
+                                        viewport.bottom = viewport.top + win.height();
+
+                                        var height = boundrect.height;
+                                        var width = boundrect.width;
+                                        var response1 = {
+                                            viewportBounds: viewport,
+                                            elementBounds: boundrect,
+                                            isVisibleOnLoad: false
+
+                                        };
+                                        //console.log("Element bounds :" +JSON.stringify(boundrect));
+
+                                        if (!width || !height) {
+                                            response1.isVisibleOnLoad = false
+                                        }
+
+
+                                        var visible = (!(viewport.right < boundrect.left || viewport.left > boundrect.right || viewport.bottom < boundrect.top || viewport.top > boundrect.bottom));
+
+                                        if (!visible) {
+                                            //return false;
+                                            response1.isVisibleOnLoad = false;
+                                        }
+
+                                        var deltas = {
+                                            top: Math.min(1, (boundrect.bottom - viewport.top) / height),
+                                            bottom: Math.min(1, (viewport.bottom - boundrect.top) / height),
+                                            left: Math.min(1, (boundrect.right - viewport.left) / width),
+                                            right: Math.min(1, (viewport.right - boundrect.left) / width)
+                                        };
+                                        var x1 = deltas.left * deltas.right;
+                                        var y1 = deltas.top * deltas.bottom;
+                                        console.log("x  :" + deltas.left * deltas.right);
+                                        console.log("y  :" + deltas.top * deltas.bottom);
+                                        if (x1 == 1 && y1 == 1) {
+                                            response1.visibilityPercentage = 100;
+                                        }
+
+                                        if (x1 < y1) {
+                                            if (x1 < 1) {
+                                                response1.visibilityPercentage = 0;
+                                            } else {
+                                                response1.visibilityPercentage = x1 * 100;
+                                            }
+                                        } else {
+                                            if (y1 < 1) {
+                                                response1.visibilityPercentage = 0;
+                                            } else {
+
+                                                response1.visibilityPercentage = y1 * 100;
+
+                                            }
+                                        }
+                                    
+                                    visible = ((deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y);
+                                    //return (deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y;
+                                    response1.isVisibleOnLoad = visible;
+                                    return response1;
+
                                 };
-
-                                //console.log("viewport bounds :" +JSON.stringify(viewport));
-
-                                viewport.right = viewport.left + win.width();
-                                viewport.bottom = viewport.top + win.height();
-
-                                var height = boundrect.height;
-                                var width = boundrect.width;
-                                var response1 = {
-                                    viewportBounds: viewport,
-                                    elementBounds: boundrect,
-                                    isVisibleOnLoad: false
-
-                                };
-                                //console.log("Element bounds :" +JSON.stringify(boundrect));
-
-                                if (!width || !height) {
-                                    response1.isVisibleOnLoad = false
-                                }
-
-
-                                var visible = (!(viewport.right < boundrect.left || viewport.left > boundrect.right || viewport.bottom < boundrect.top || viewport.top > boundrect.bottom));
-
-                                if (!visible) {
-                                    //return false;
-                                    response1.isVisibleOnLoad = false;
-                                }
-
-                                var deltas = {
-                                    top: Math.min(1, (boundrect.bottom - viewport.top) / height),
-                                    bottom: Math.min(1, (viewport.bottom - boundrect.top) / height),
-                                    left: Math.min(1, (boundrect.right - viewport.left) / width),
-                                    right: Math.min(1, (viewport.right - boundrect.left) / width)
-                                };
-                                console.log("x  :" + deltas.left * deltas.right);
-                                console.log("y  :" + deltas.top * deltas.bottom);
-                                visible = ((deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y);
-                                //return (deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y;
-                                response1.isVisibleOnLoad = visible;
-                                return response1;
-
-                            };
-                        });
+                            });
 
                         responseArr = page.evaluate(function() {
                             console.log("Hello");
@@ -120,17 +145,17 @@ server.listen(port, function(request, response) {
                                                                width: params.width * 0.50,
                                                                height: params.height * 0.50
                                                            };*/
-			var milliseconds = new Date().getTime();
-			var imageName=webserver + '/'+milliseconds+'.jpeg';
+                        var milliseconds = new Date().getTime();
+                        var imageName = webserver + '/' + milliseconds + '.jpeg';
                         page.render(imageName, {
                             format: 'jpeg',
                             quality: '50'
                         });
-			var image={};
-			image.url="http://localhost/"+milliseconds+'.jpeg';
-			var finalResponse = [];
-			finalResponse.push(image);
-			finalResponse.push(responseArr);
+                        var image = {};
+                        image.url = "http://localhost/" + milliseconds + '.jpeg';
+                        var finalResponse = [];
+                        finalResponse.push(image);
+                        finalResponse.push(responseArr);
                         console.log("response-----------  : " + JSON.stringify(finalResponse));
                         response.statusCode = 200;
                         response.setEncoding("binary");
@@ -147,25 +172,25 @@ server.listen(port, function(request, response) {
 
 
 
-            }
-
-
-            page.open(addurl);
-            console.log('loading');
-
-
         }
-    } catch (e) {
-        console.log("Inside catch block");
-        console.log(e);
-        msg = "Failed rendering: \n" + e;
-        response.statusCode = 500;
-        response.setHeader('Content-Type', 'text/plain');
-        response.setHeader('Content-Length', msg.length);
-        console.log(msg);
-        response.write(msg);
-        response.close();
+
+
+        page.open(addurl);
+        console.log('loading');
+
+
     }
+} catch (e) {
+    console.log("Inside catch block");
+    console.log(e);
+    msg = "Failed rendering: \n" + e;
+    response.statusCode = 500;
+    response.setHeader('Content-Type', 'text/plain');
+    response.setHeader('Content-Length', msg.length);
+    console.log(msg);
+    response.write(msg);
+    response.close();
+}
 
 
 

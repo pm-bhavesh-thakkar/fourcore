@@ -38,10 +38,13 @@ server.listen(port, function(request, response) {
                 console.log(msg);
             };
             var responseArr = [];
+ 	    if (params.userAgent === undefined) params.userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36';
+            if (params.width === undefined) params.width = 1024;
+            if (params.height === undefined) params.height = 768;
             page.settings.localToRemoteUrlAccessEnabled = true;
             page.viewportSize = {
-                width: 1024,
-                height: 768
+                width: params.width,
+                height: params.height
             };
             page.onLoadFinished = function(status) {
 
@@ -72,8 +75,7 @@ server.listen(port, function(request, response) {
                                         var height = boundrect.height;
                                         var width = boundrect.width;
 					
-                                        var response1 = {
-                                            viewportBounds: viewport,
+                                        var response1 = {                                            
                                             elementBounds: boundrect,
                                             isVisibleOnLoad: false
 
@@ -131,6 +133,54 @@ server.listen(port, function(request, response) {
 
                                 };
                             });
+			
+			 var lang = page.evaluate(function() {
+				return  document.getElementsByTagName("html")[0].getAttribute("lang");
+
+
+			});
+
+ 			var topics = page.evaluate(function() {
+			
+			var allText ="";
+			
+			$('*').filter(function()
+				{
+			    if(($(this).text().length>0)&&($(this).text().length<100))
+			    {
+				return true;
+			    }
+			    else
+			    {
+				return false;
+			    }
+			}).each(function()
+			{
+			   allText = allText + $(this).text();
+			});
+                          allText= allText.replace(/(\r\n|\n|\r)/gm," ");
+			allText = allText.toLowerCase().replace(/\b(?:the|it is|we all|an?|by|font|this|what|more|to|you|[mh]e|she|they|we|and|your|or|string|return|value|length|about|with|for|get|up|how|from|user|home|search|read})\b/ig, '');	
+			var cleanString = allText.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,""),
+      words = cleanString.split(' '),
+      frequencies = {},
+      word, frequency, i;
+
+  for( i=0; i<words.length; i++ ) {
+    word = words[i].trim();
+if (word) {
+    if (word.length < 4 || word.length > 10) { continue; }
+    frequencies[word] = frequencies[word] || 0;
+    frequencies[word]++;
+}
+   
+  }
+  
+  words = Object.keys( frequencies );
+
+ return words.sort(function (a,b) { return frequencies[b] -frequencies[a];}).slice(0,50).toString(); //Most frequent 25 words
+
+ 			
+                         });
 
                         responseArr = page.evaluate(function() {
                             console.log("Hello");
@@ -154,11 +204,18 @@ server.listen(port, function(request, response) {
                             format: 'jpeg',
                             quality: '50'
                         });
-                        var image = {};
-                        image.url = "http://172.16.4.37/" + milliseconds + '.jpeg';
+
+			
+                        var pubSite = {};
+                        pubSite.imageurl = "http://localhost/" + milliseconds + '.jpeg';
+ 			pubSite.pageLang = lang;
+			pubSite.url = addurl;
+			pubSite.topics = topics;
+			pubSite.currentViewPort = page.viewportSize;
                         var finalResponse = [];
-                        finalResponse.push(image);
-                        finalResponse.push(responseArr);
+                        finalResponse.push(pubSite);
+                        finalResponse.push(responseArr);			
+			
                         console.log("response-----------  : " + JSON.stringify(finalResponse));
                         response.statusCode = 200;
                         response.setEncoding("binary");

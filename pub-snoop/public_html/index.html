@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html ng-app="pubSnoop">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--<meta http-equiv="refresh" content="20" />-->
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>PubSnoop</title>
+
+        <!-- Bootstrap -->
+        <link href="script/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="script/lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+        <!--<link href="script/lib/bootstrap/css/bootstrap-theme-yeti.css" rel="stylesheet">-->
+        <!--<link href="script/lib/bootstrap/css/bootstrap-theme-cosmo.css" rel="stylesheet">-->
+        <link href="script/lib/angularjs/ngProgress.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/snoop.css" rel="stylesheet">
+        <script src="script/lib/jquery/jquery-1.11.2.min.js" type="text/javascript"></script>
+        <script src="script/lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="script/lib/angularjs/angular.min.js" type="text/javascript"></script>
+        <script src="script/lib/angularjs/ngProgress.min.js" type="text/javascript"></script>
+        <script src="script/loder.js" type="text/javascript"></script>
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+    <body ng-controller="main">
+        <div class="nav-wrapper">
+            <nav class="navbar navbar-inverse navbar-fixed-top" style="">
+                <div class="container">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#" style="font-weight: 700;background: black"><span style="color: #fff">Pub</span><span style="color: #0E97D7">Snoop</span></a>
+                    </div>
+
+
+                    <form ng-submit="search()" class="navbar-form navbar-left" role="search" style="margin-left: 50px;">
+                        <div class="form-group" >
+                            <input type="url" class="form-control url-box" id="url" placeholder="Url" autocomplete="off" ng-model="url">
+                        </div>
+
+                        <div class="btn-group" data-toggle="buttons" style="margin-left: 40px;">
+                            <label class="btn btn-info" style="width:  46px; text-align: center;">
+                                <input type="radio" name="options" id="option1" ng-model="resolution" value=""> <i class="fa fa-mobile-phone fa-lg"></i>
+                            </label>
+                            <label class="btn btn-info" style="width:  46px; text-align: center;">
+                                <input type="radio" name="options" id="option2" ng-model="resolution" value=""> <i class="fa fa-tablet fa-lg"></i>
+                            </label>
+                            <label class="btn btn-info active" style="width:  46px; text-align: center;">
+                                <input type="radio" name="options" id="option3" ng-model="resolution" value="" checked> <i class="fa fa-laptop fa-lg"></i>
+                            </label>
+                            <label class="btn btn-info" style="width:  46px; text-align: center;">
+                                <input type="radio" name="options" id="option3" ng-model="resolution" value=""> <i class="fa fa-desktop fa-lg"></i>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="margin-left: 40px;"><i class="fa fa-search" ></i> &nbsp;Snoop </button>
+                    </form>
+                </div><!-- /.container-fluid -->
+            </nav>
+        </div>
+
+        <div class="container" id="site-home" style="padding-top: 80px; height: 100%">
+
+            <div class="headline text-center">
+                <h2 style="padding-left: 10px;">
+                    Welcome User
+                </h2>
+            </div>
+
+
+        </div>
+        <div class="container" id="site-info" style="margin-top: 50px; display: none">
+            <div class="row">
+                <div class="headline">
+                    <h2>
+                        Site Info
+                    </h2>
+                </div>
+            </div>    
+            <div class="row">
+
+                <div class="row">
+                    <div class="col-sm-12 col-md-12">
+                        <div class="thumbnail">
+                            <div class="caption topics">
+                                <h4>Topics</h4>
+                                <h4 class="h3">
+                                <label ng-repeat="label in data.page.topics.split(',')" class="label label-success" > #{{label}} </label>
+                                </h4>
+                            </div>
+                        </div></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Cluttered</h4>
+
+                                <label class="label label-primary h4">{{data.page.cluttered}} %</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Category</h4>
+                                <label class="label label-primary h4">{{data.page.category}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Overlap Ads</h4>
+                                <label class="label label-primary h4">{{data.page.overlapDetected==1?"Yes":"No"}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Malware Detected </h4>
+                                <label class="label label-primary h4">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Ads Viewability </h4>
+                                <label class="label label-primary h4">{{data.page.visibilityScore}} %</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Language </h4>
+                                <label class="label label-primary h4">{{data.page.lang}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>Auto refresh detected </h4>
+                                <label class="label label-primary h4">{{data.page.autoRefreshDetected==1?"Yes":"No"}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>    
+            <div class="row">
+                <div style="padding-left: 0">
+                    <div style="display: inline-block; position: relative;">
+                        <!--<img ng-src="{{data.site.image}}" class="img" alt="Please try again">-->
+                        <!--<site-image></site-image>-->
+                        <img id="siteImage" ng-src="{{data.page.snapshotUrl}}">
+                        <overlay></overlay>
+                        <!--<div ng-repeat="ad in data.ads" ng-style="{'background-image': 'url({{data.site.image}})'}" style="position: absolute; top:{{ad.bound.y+'px'}};left:{{ad.bound.x+'px'}}; width: {{ad.bound.w+'px'}}; height: {{ad.bound.h+'px'}}; background-position: -{{ad.bound.x+'px'}} -{{ad.bound.y+'px'}}"></div>-->
+
+                        <div ng-repeat="ad in data.ads" style="background-image: url({{data.page.snapshotUrl}}); position: absolute; top:{{ad.bound.y + 'px'}};left:{{ad.bound.x + 'px'}}; width: {{ad.bound.w + 'px'}}; height: {{ad.bound.h + 'px'}}; background-position: -{{ad.bound.x + 'px'}} -{{ad.bound.y + 'px'}}"></div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>

@@ -191,7 +191,8 @@ Page.prototype = {
     },
     getVisibilityScore: function () {
         var visibleCount = 0;
-        for (var i = 0; i < this.advertisements; i++) {
+        for (var i = 0; i < this.advertisements.length; i++) {
+            console.log("view able :: "+this.advertisements[i].viewable);
             if (this.advertisements[i].viewable > 1) {
                 visibleCount++;
             }
@@ -336,7 +337,7 @@ function Snooper(request, response) {
                     words = Object.keys(frequencies);
                     return words.sort(function (a, b) {
                         return frequencies[b] - frequencies[a];
-                    }).slice(0, 50).toString(); //Most frequent 25 words
+                    }).slice(0, 15).toString(); //Most frequent 25 words
 
                 });
 //                });

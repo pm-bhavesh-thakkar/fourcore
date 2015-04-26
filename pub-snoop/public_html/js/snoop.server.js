@@ -196,7 +196,7 @@ Page.prototype = {
                 visibleCount++;
             }
         }
-        var score = Math.round((visibleCount / this.advertisements.length) * 10000) / 100;
+        var score = Math.round((visibleCount  * 10000)/ this.advertisements.length)/ 100;
         return isNaN(score) ? 0 : score;
     },
     setAutoRefreshDetected: function (value) {
@@ -240,7 +240,7 @@ Page.prototype = {
                 "\",\"category\":\"" + this.category +
                 "\",\"malwareDetected\":\"" + this.malwareDetected +
                 "\",\"visibilityScore\":\"" + this.getVisibilityScore()
-                + "\",\"lang\":\"" + this.lang + "\", \"snapshotUrl\":\" " + this.snapShotUrl + "\",\"url\":\"" + this.url + "\", \"autoRefreshDetected\" :\"" + this.autoRefreshDetected + "\" }}";
+                + "\",\"lang\":\"" + this.lang + "\", \"snapshotUrl\":\" " + this.snapShotUrl + "\",\"url\":\"" + this.url + "\", \"autoRefreshDetected\" :\"" + (this.autoRefreshDetected?1:0) + "\" }}";
     }
 };
 //snoop-server start

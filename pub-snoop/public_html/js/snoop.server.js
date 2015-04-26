@@ -196,7 +196,7 @@ Page.prototype = {
                 visibleCount++;
             }
         }
-        var score = Math.round((visibleCount / this.advertisements) * 10000) / 100;
+        var score = Math.round((visibleCount / this.advertisements.length) * 10000) / 100;
         return isNaN(score) ? 0 : score;
     },
     setAutoRefreshDetected: function (value) {
@@ -356,7 +356,7 @@ function Snooper(request, response) {
                 });
                 page.addSnapshotUrl("http://localhost/" + milliseconds + '.jpeg');
                 console.log("response-----------  : " + page.toString());
-                //response.setHeader('Access-Control-Allow-Origin: *', '*');
+                response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setEncoding("binary");
                 response.write(page.toString());
                 response.close();
@@ -369,7 +369,7 @@ function Snooper(request, response) {
         response.statusCode = 500;
         response.setHeader('Content-Type', 'text/plain');
         response.setHeader('Content-Length', msg.length);
-        //response.setHeader('Access-Control-Allow-Origin: *', '*');
+        response.setHeader('Access-Control-Allow-Origin', '*');
         console.log(msg);
         response.write(msg);
         response.close();

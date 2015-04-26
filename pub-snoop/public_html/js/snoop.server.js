@@ -125,8 +125,8 @@ function Page() {
     this.advertisements = new Array();
     this.topics = new Array();
     this.overlapDetected = false;
-    this.malwareDetected =false;
-    this.category="NA";
+    this.malwareDetected = false;
+    this.category = "IAB24";
 }
 /**
  * 
@@ -137,7 +137,7 @@ Page.prototype = {
         if (!(advertisement instanceof Advertisement))
             throw EXCEPTION_LIST.NOT_VALID_ADVERTISEMENT;
         //check is advertisment having visible dimantions or not
-        if(advertisement.bound.getHeight()<10||advertisement.bound.getWidth()<10)
+        if (advertisement.bound.getHeight() < 10 || advertisement.bound.getWidth() < 10)
             return;
         //first check is overlapping is exist with existing advertisment
         this.checkAndMarkOverlap(advertisement);
@@ -170,7 +170,7 @@ Page.prototype = {
             throw EXCEPTION_LIST.NOT_VALID_ADVERTISEMENT;
         for (var i = 0; i < this.advertisements.length; i++) {
             if (this.advertisements[i].bound.isOverlaped(advertisement.bound)) {
-                
+
                 this.advertisements[i].addOverlappedAdvertisement(advertisement);
             }
         }
@@ -186,17 +186,18 @@ Page.prototype = {
         for (var i = 0; i < this.advertisements.length; i++) {
             viewportArea -= (this.advertisements[i].getArea() - this.advertisements[i].getTotalOverlappedArea());
         }
-        this.clutterd = Math.round((viewportArea / this.bound.getArea()) * 10000) / 100;
-        return 100-this.clutterd;
+        this.clutterd = (viewportArea / this.bound.getArea()) * 100;
+        return Math.round((100 - this.clutterd) * 100) / 100;
     },
     getVisibilityScore: function () {
-        var visibleCount =0;
-        for(var i =0; i<this.advertisements;i++){
-            if(this.advertisements[i].viewable>1){
+        var visibleCount = 0;
+        for (var i = 0; i < this.advertisements; i++) {
+            if (this.advertisements[i].viewable > 1) {
                 visibleCount++;
             }
         }
-        return Math.round((visibleCount/this.advertisements)*10000)/100;
+        var score = Math.round((visibleCount / this.advertisements) * 10000) / 100;
+        return isNaN(score) ? 0 : score;
     },
     setAutoRefreshDetected: function (value) {
         this.autoRefreshDetected = value;
@@ -298,7 +299,7 @@ function Snooper(request, response) {
                     }
                     return adBounds;
                 });
-                
+
                 page.setAutoRefreshDetected(webPage.evaluate(function () {
                     return !document.querySelector("meta[http-equiv='refresh']") == undefined;
                 }));
@@ -316,7 +317,7 @@ function Snooper(request, response) {
                     });
                     allText = allText.replace(/(\r\n|\n|\r)/gm, " ");
                     allText = allText.toLowerCase().replace(/\b(?:the|it is|we all|an?|by|font|this|what|more|to|you|[mh]e|she|they|we|and|your|or|string|return|value|length|about|with|for|get|up|how|from|user|home|search|read})\b/ig, '');
-                    var cleanString = allText.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g, ""),
+                    var cleanString = allText.replace(/[\.,-\/#!$%\^&\*'';:{}=\-_`~()]/g, ""),
                             words = cleanString.split(' '),
                             frequencies = {},
                             word, frequency, i;
@@ -355,7 +356,7 @@ function Snooper(request, response) {
                 });
                 page.addSnapshotUrl("http://localhost/" + milliseconds + '.jpeg');
                 console.log("response-----------  : " + page.toString());
-                response.statusCode = 200;
+                //response.setHeader('Access-Control-Allow-Origin: *', '*');
                 response.setEncoding("binary");
                 response.write(page.toString());
                 response.close();
@@ -368,6 +369,7 @@ function Snooper(request, response) {
         response.statusCode = 500;
         response.setHeader('Content-Type', 'text/plain');
         response.setHeader('Content-Length', msg.length);
+        //response.setHeader('Access-Control-Allow-Origin: *', '*');
         console.log(msg);
         response.write(msg);
         response.close();

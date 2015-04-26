@@ -236,7 +236,7 @@ Page.prototype = {
                 + "],\"page\":{ \"viewport\":" + this.viewport
                 + ",\"bound\": " + this.bound + ",\"cluttered\" :\" " + this.getClutteredScore()
                 + "\", \"topics\":" + JSON.stringify(this.topics)
-                + ",\"overlapDetected\":\"" + this.overlapDetected +
+                + ",\"overlapDetected\":\"" + this.overlapDetected?1:0 +
                 "\",\"category\":\"" + this.category +
                 "\",\"malwareDetected\":\"" + this.malwareDetected +
                 "\",\"visibilityScore\":\"" + this.getVisibilityScore()
@@ -248,6 +248,7 @@ Page.prototype = {
 function Snooper(request, response) {
     try
     {
+        console.log("pramas :: "+ request.post)
         var params = JSON.parse(request.post);
         if (params.status) {
             // for server health validation

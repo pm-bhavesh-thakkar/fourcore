@@ -114,7 +114,7 @@ Advertisement.prototype = {
         this.viewable = score;
     },
     toString: function () {
-        return "{\" id\":\"" + this._id + "\",\"bound\":" + this.bound.toString() + ",\"viewable\":\"" + this.viewable + "\",   \"overlappedAds\":[" + this._overlapped.toString() + "]}";
+        return "{\"id\":\"" + this._id + "\",\"bound\":" + this.bound.toString() + ",\"viewable\":\"" + this.viewable + "\",   \"overlappedAds\":[" + this._overlapped.toString() + "]}";
     }
 };
 /**
@@ -190,7 +190,13 @@ Page.prototype = {
         return 100-this.clutterd;
     },
     getVisibilityScore: function () {
-        return 100;
+        var visibleCount =0;
+        for(var i =0; i<this.advertisements;i++){
+            if(this.advertisements[i].viewable>1){
+                visibleCount++;
+            }
+        }
+        return Math.round((visibleCount/this.advertisements)*10000)/100;
     },
     setAutoRefreshDetected: function (value) {
         this.autoRefreshDetected = value;

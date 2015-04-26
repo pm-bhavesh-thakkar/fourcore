@@ -236,7 +236,7 @@ Page.prototype = {
                 + "],\"page\":{ \"viewport\":" + this.viewport
                 + ",\"bound\": " + this.bound + ",\"cluttered\" :\" " + this.getClutteredScore()
                 + "\", \"topics\":" + JSON.stringify(this.topics)
-                + ",\"overlapDetected\":\"" + this.overlapDetected?1:0 +
+                + ",\"overlapDetected\":\"" + (this.overlapDetected?1:0) +
                 "\",\"category\":\"" + this.category +
                 "\",\"malwareDetected\":\"" + this.malwareDetected +
                 "\",\"visibilityScore\":\"" + this.getVisibilityScore()
@@ -248,7 +248,6 @@ Page.prototype = {
 function Snooper(request, response) {
     try
     {
-        console.log("pramas :: "+ request.post)
         var params = JSON.parse(request.post);
         if (params.status) {
             // for server health validation
@@ -302,7 +301,7 @@ function Snooper(request, response) {
                 });
 
                 page.setAutoRefreshDetected(webPage.evaluate(function () {
-                    return document.querySelector("meta[http-equiv='refresh']") == undefined?0:1;
+                    return !document.querySelector("meta[http-equiv='refresh']") == undefined;
                 }));
                 page.setLanguage(webPage.evaluate(function () {
                     return document.getElementsByTagName("html")[0].getAttribute("lang");
@@ -318,7 +317,7 @@ function Snooper(request, response) {
                     });
                     allText = allText.replace(/(\r\n|\n|\r)/gm, " ");
                     allText = allText.toLowerCase().replace(/\b(?:the|it is|we all|an?|by|font|this|what|more|to|you|[mh]e|she|they|we|and|your|or|string|return|value|length|about|with|for|get|up|how|from|user|home|search|read})\b/ig, '');
-                    var cleanString = allText.replace(/[\.,-\/#!$%\^&\*'';><:{}=\-_`~()]/g, ""),
+                    var cleanString = allText.replace(/[\.,-\/#!$%\^&\*'';:{}=\-_`~()]/g, ""),
                             words = cleanString.split(' '),
                             frequencies = {},
                             word, frequency, i;
@@ -337,7 +336,7 @@ function Snooper(request, response) {
                     words = Object.keys(frequencies);
                     return words.sort(function (a, b) {
                         return frequencies[b] - frequencies[a];
-                    }).slice(0, 15).toString(); //Most frequent 25 words
+                    }).slice(0, 50).toString(); //Most frequent 25 words
 
                 });
 //                });
@@ -356,7 +355,6 @@ function Snooper(request, response) {
                     quality: '70'
                 });
                 page.addSnapshotUrl("http://localhost/" + milliseconds + '.jpeg');
-                console.log("response-----------  : " + page.toString());
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setEncoding("binary");
                 response.write(page.toString());
@@ -370,7 +368,7 @@ function Snooper(request, response) {
         response.statusCode = 500;
         response.setHeader('Content-Type', 'text/plain');
         response.setHeader('Content-Length', msg.length);
-        response.setHeader('Access-Control-Allow-Origin', '*');
+        //response.setHeader('Access-Control-Allow-Origin: *', '*');
         console.log(msg);
         response.write(msg);
         response.close();

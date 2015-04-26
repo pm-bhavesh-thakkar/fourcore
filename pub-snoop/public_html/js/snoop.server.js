@@ -236,9 +236,9 @@ Page.prototype = {
                 + ",\"bound\": " + this.bound + ",\"cluttered\" :\" " + this.getClutteredScore()
                 + "\", \"topics\":" + JSON.stringify(this.topics)
                 + ",\"overlapDetected\":\"" + this.overlapDetected +
-                "\",\"category \":\"" + this.category +
-                "\",\"malwareDetected \":\"" + this.malwareDetected +
-                "\",\"visibilityScore \":\"" + this.getVisibilityScore()
+                "\",\"category\":\"" + this.category +
+                "\",\"malwareDetected\":\"" + this.malwareDetected +
+                "\",\"visibilityScore\":\"" + this.getVisibilityScore()
                 + "\",\"lang\":\"" + this.lang + "\", \"snapshotUrl\":\" " + this.snapShotUrl + "\",\"url\":\"" + this.url + "\", \"autoRefreshDetected\" :\"" + this.autoRefreshDetected + "\" }}";
     }
 };

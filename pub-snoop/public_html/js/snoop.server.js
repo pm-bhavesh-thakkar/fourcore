@@ -302,7 +302,7 @@ function Snooper(request, response) {
                 });
 
                 page.setAutoRefreshDetected(webPage.evaluate(function () {
-                    return !document.querySelector("meta[http-equiv='refresh']") == undefined;
+                    return document.querySelector("meta[http-equiv='refresh']") == undefined?0:1;
                 }));
                 page.setLanguage(webPage.evaluate(function () {
                     return document.getElementsByTagName("html")[0].getAttribute("lang");
@@ -318,7 +318,7 @@ function Snooper(request, response) {
                     });
                     allText = allText.replace(/(\r\n|\n|\r)/gm, " ");
                     allText = allText.toLowerCase().replace(/\b(?:the|it is|we all|an?|by|font|this|what|more|to|you|[mh]e|she|they|we|and|your|or|string|return|value|length|about|with|for|get|up|how|from|user|home|search|read})\b/ig, '');
-                    var cleanString = allText.replace(/[\.,-\/#!$%\^&\*'';:{}=\-_`~()]/g, ""),
+                    var cleanString = allText.replace(/[\.,-\/#!$%\^&\*'';><:{}=\-_`~()]/g, ""),
                             words = cleanString.split(' '),
                             frequencies = {},
                             word, frequency, i;
@@ -337,7 +337,7 @@ function Snooper(request, response) {
                     words = Object.keys(frequencies);
                     return words.sort(function (a, b) {
                         return frequencies[b] - frequencies[a];
-                    }).slice(0, 50).toString(); //Most frequent 25 words
+                    }).slice(0, 15).toString(); //Most frequent 25 words
 
                 });
 //                });
